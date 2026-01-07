@@ -110,3 +110,4 @@ This project is licensed under the MIT License.
 ---
 
 Built with 💚 for healthy living and sustainable shopping.
+Thank You
