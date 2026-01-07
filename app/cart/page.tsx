@@ -51,7 +51,7 @@ export default function CartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
-              <div key={`${item.id}-${item.weight}`} className="bg-white rounded-2xl p-6 shadow-sm">
+              <div key={`${item.id}-${item.selectedUnit.value}`} className="bg-white rounded-2xl p-6 shadow-sm">
                 <div className="flex gap-4">
                   <img
                     src={item.image}
@@ -63,7 +63,7 @@ export default function CartPage() {
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h3 className="font-semibold text-heading text-lg">{item.name}</h3>
-                        <p className="text-gray-600">Weight: {item.weight}</p>
+                        <p className="text-gray-600">Unit: {item.selectedUnit.label}</p>
                       </div>
                       <button
                         onClick={() => removeFromCart(item.id)}

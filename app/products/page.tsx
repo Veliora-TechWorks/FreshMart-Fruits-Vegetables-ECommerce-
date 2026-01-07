@@ -2,268 +2,411 @@
 
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { Search, Filter, Grid, List, Star, Heart, Eye, ShoppingCart, Plus, Minus } from 'lucide-react'
+import AdvancedProductCard from '@/components/AdvancedProductCard'
+import { Product } from '@/types/product'
+import { Search, SlidersHorizontal, Grid3X3, List, ChevronDown, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { useCurrency } from '@/components/CurrencyContext'
+import { useCart } from '@/components/CartContext'
 
-import ProductCard from '@/components/ProductCard'
-
-const allProducts = [
-  {
-    id: 1, name: 'Fresh Red Apples', price: 4.99, originalPrice: 5.99, category: 'Fruits',
-    image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    rating: 4.8, reviews: 124, stock: 15, organic: true, discount: 17
-  },
-  {
-    id: 2, name: 'Organic Tomatoes', price: 3.49, originalPrice: 3.99, category: 'Vegetables',
-    image: 'https://images.unsplash.com/photo-1546470427-e26264be0b0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    rating: 4.6, reviews: 89, stock: 8, organic: true, discount: 13
-  },
-  {
-    id: 3, name: 'Ripe Bananas', price: 2.99, originalPrice: null, category: 'Fruits',
-    image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    rating: 4.9, reviews: 156, stock: 22, organic: false, discount: null
-  },
-  {
-    id: 4, name: 'Fresh Carrots', price: 2.49, originalPrice: 2.99, category: 'Vegetables',
-    image: 'https://images.unsplash.com/photo-1445282768818-728615cc910a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    rating: 4.7, reviews: 67, stock: 3, organic: true, discount: 17
-  },
-  {
-    id: 5, name: 'Green Broccoli', price: 3.99, originalPrice: null, category: 'Vegetables',
-    image: 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    rating: 4.5, reviews: 43, stock: 12, organic: true, discount: null
-  },
-  {
-    id: 6, name: 'Fresh Spinach', price: 2.79, originalPrice: 3.29, category: 'Leafy Greens',
-    image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    rating: 4.4, reviews: 91, stock: 0, organic: true, discount: 15
-  },
-  {
-    id: 7, name: 'Mixed Berries', price: 6.99, originalPrice: 7.99, category: 'Berries',
-    image: 'https://images.unsplash.com/photo-1498557850523-fd3d118b962e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    rating: 4.9, reviews: 203, stock: 18, organic: true, discount: 13
-  },
-  {
-    id: 8, name: 'Fresh Oranges', price: 3.99, originalPrice: null, category: 'Citrus',
-    image: 'https://images.unsplash.com/photo-1557800636-894a64c1696f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    rating: 4.6, reviews: 78, stock: 25, organic: false, discount: null
-  }
-]
+interface DBProduct {
+  _id: string
+  name: string
+  description: string
+  price: number
+  originalPrice?: number
+  category: string
+  images: Array<{ url: string; alt?: string }>
+  stock: number
+  unit: string
+  featured: boolean
+  organic: boolean
+  rating: number
+  reviews: Array<any>
+  brand?: string
+  deliveryTime?: string
+  offerText?: string
+}
 
 export default function ProductsPage() {
   const searchParams = useSearchParams()
+  const { addToCart } = useCart()
+  const [products, setProducts] = useState<DBProduct[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState('name')
+  const [priceRange, setPriceRange] = useState([0, 1000])
+  const [showFilters, setShowFilters] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [cart, setCart] = useState<{[key: number]: number}>({})
-  const [wishlist, setWishlist] = useState<number[]>([])
-  const { convertPrice } = useCurrency()
+  const [wishlist, setWishlist] = useState<string[]>([])
 
-  const categories = ['All', 'Fruits', 'Vegetables', 'Leafy Greens', 'Berries', 'Citrus', 'Tropical', 'Herbs', 'Organic']
-  
+  useEffect(() => {
+    fetchProducts()
+    // Seed database if empty
+    seedIfEmpty()
+  }, [])
+
+  const seedIfEmpty = async () => {
+    try {
+      const response = await fetch('/api/products')
+      const data = await response.json()
+      if (!Array.isArray(data) || data.length === 0) {
+        await fetch('/api/seed', { method: 'POST' })
+        fetchProducts()
+      }
+    } catch (error) {
+      console.error('Error checking/seeding products:', error)
+    }
+  }
+
   useEffect(() => {
     const categoryParam = searchParams.get('category')
-    if (categoryParam) {
-      const categoryMap: {[key: string]: string} = {
-        'fruits': 'Fruits',
-        'vegetables': 'Vegetables', 
-        'leafy-greens': 'Leafy Greens',
-        'berries': 'Berries',
-        'citrus': 'Citrus',
-        'tropical': 'Tropical',
-        'herbs': 'Herbs',
-        'organic': 'Organic'
-      }
-      setSelectedCategory(categoryMap[categoryParam] || 'All')
-    }
+    const searchParam = searchParams.get('search')
+    
+    if (categoryParam) setSelectedCategory(categoryParam)
+    if (searchParam) setSearchTerm(searchParam)
   }, [searchParams])
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/products')
+      if (!response.ok) {
+        throw new Error('Failed to fetch products')
+      }
+      const data = await response.json()
+      setProducts(Array.isArray(data) ? data : [])
+      if (data.length > 0) {
+        const maxPrice = Math.max(...data.map((p: DBProduct) => p.price))
+        setPriceRange([0, maxPrice])
+      }
+    } catch (error) {
+      console.error('Failed to fetch products:', error)
+      setProducts([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const convertToAdvancedProduct = (dbProduct: DBProduct): Product => {
+    return {
+      id: dbProduct._id,
+      name: dbProduct.name,
+      category: dbProduct.category,
+      image: dbProduct.images?.[0]?.url || '/placeholder-product.jpg',
+      price: dbProduct.price,
+      mrp: dbProduct.originalPrice || dbProduct.price,
+      unitOptions: [
+        { value: 1, label: `1 ${dbProduct.unit}`, multiplier: 1 },
+        { value: 0.5, label: `0.5 ${dbProduct.unit}`, multiplier: 0.5 },
+        { value: 2, label: `2 ${dbProduct.unit}`, multiplier: 2 }
+      ],
+      rating: dbProduct.rating || 0,
+      reviews: dbProduct.reviews?.length || 0,
+      inStock: dbProduct.stock > 0,
+      isOrganic: dbProduct.organic || false,
+      isSeasonal: false,
+      isBestSeller: dbProduct.featured || false,
+      isFresh: true,
+      stockLevel: dbProduct.stock > 10 ? 'high' as const : dbProduct.stock > 5 ? 'medium' as const : dbProduct.stock > 0 ? 'low' as const : 'out' as const,
+      freshnessScore: 90 + Math.floor(Math.random() * 10),
+      isRecommended: dbProduct.featured || false
+    }
+  }
+
+  const categories = [
+    { id: 'all', label: 'All Products', count: products.length },
+    { id: 'fruits', label: 'Fresh Fruits', count: products.filter(p => p.category === 'fruits').length },
+    { id: 'vegetables', label: 'Vegetables', count: products.filter(p => p.category === 'vegetables').length },
+    { id: 'herbs', label: 'Fresh Herbs', count: products.filter(p => p.category === 'herbs').length },
+    { id: 'organic', label: 'Organic Only', count: products.filter(p => p.organic).length }
+  ]
+
+  const sortOptions = [
+    { value: 'name', label: 'Name A-Z' },
+    { value: 'price-low', label: 'Price: Low to High' },
+    { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'rating', label: 'Highest Rated' },
+    { value: 'newest', label: 'Newest First' }
+  ]
   
-  const filteredProducts = allProducts
-    .filter(product => 
-      (selectedCategory === 'All' || product.category === selectedCategory) &&
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  const filteredProducts = products
+    .filter(product => {
+      const matchesCategory = selectedCategory === 'all' || 
+        (selectedCategory === 'organic' ? product.organic : product.category === selectedCategory)
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
+      return matchesCategory && matchesSearch && matchesPrice
+    })
     .sort((a, b) => {
       switch (sortBy) {
         case 'price-low': return a.price - b.price
         case 'price-high': return b.price - a.price
-        case 'rating': return b.rating - a.rating
+        case 'rating': return (b.rating || 0) - (a.rating || 0)
         default: return a.name.localeCompare(b.name)
       }
     })
 
-  const addToCart = (productId: number) => {
-    setCart(prev => ({ ...prev, [productId]: (prev[productId] || 0) + 1 }))
-  }
-
-  const removeFromCart = (productId: number) => {
-    setCart(prev => ({ ...prev, [productId]: Math.max((prev[productId] || 0) - 1, 0) }))
-  }
-
-  const toggleWishlist = (productId: number) => {
+  const toggleWishlist = (productId: string) => {
     setWishlist(prev => 
       prev.includes(productId) 
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
     )
   }
+
+  const clearFilters = () => {
+    setSelectedCategory('all')
+    setSearchTerm('')
+    setPriceRange([0, Math.max(...products.map(p => p.price)) || 1000])
+  }
+
+  const activeFiltersCount = [
+    selectedCategory !== 'all',
+    searchTerm !== '',
+    priceRange[1] !== (Math.max(...products.map(p => p.price)) || 1000)
+  ].filter(Boolean).length
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="pt-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="animate-pulse space-y-6">
+              <div className="h-16 bg-gray-200 rounded-lg"></div>
+              <div className="h-12 bg-gray-200 rounded-lg"></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} className="bg-gray-200 rounded-xl h-80"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <Header />
       
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary to-primary/80 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Fresh Products</h1>
-          <p className="text-xl opacity-90 max-w-2xl mx-auto">
-            Discover our complete range of fresh, organic fruits and vegetables
-          </p>
-        </div>
-      </section>
+      {/* Page Header */}
+      <section className="bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            
+            {/* Title & Breadcrumb */}
+            <div className="space-y-2">
+              <nav className="text-sm text-gray-500">
+                <span>Home</span> / <span>Products</span>
+                {selectedCategory !== 'all' && (
+                  <> / <span className="text-primary font-medium">{categories.find(c => c.id === selectedCategory)?.label}</span></>
+                )}
+              </nav>
+              <div>
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+                  {selectedCategory === 'all' ? 'All Products' : categories.find(c => c.id === selectedCategory)?.label}
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  Premium quality produce from trusted local farms
+                </p>
+              </div>
+            </div>
 
-      {/* Filters & Search */}
-      <section className="bg-white shadow-sm sticky top-16 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
+            {/* Search Bar */}
+            <div className="relative max-w-md w-full lg:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               />
-            </div>
-
-            {/* Category Filter */}
-            <div className="flex gap-2 overflow-x-auto">
-              {categories.map(category => (
+              {searchTerm && (
                 <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-                    selectedCategory === category
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                  {category}
+                  <X size={18} />
                 </button>
-              ))}
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Filters Bar */}
+      <section className="bg-white border-b border-gray-100 sticky top-16 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          
+          {/* Mobile Filter Toggle */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="lg:hidden w-full flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200 mb-4"
+          >
+            <span className="flex items-center gap-2 font-medium text-gray-700">
+              <SlidersHorizontal size={18} />
+              Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+            </span>
+            <ChevronDown className={`transform transition-transform ${showFilters ? 'rotate-180' : ''}`} size={18} />
+          </button>
+
+          {/* Filters Content */}
+          <div className={`space-y-4 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+            
+            {/* Categories */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3 lg:hidden">Categories</h3>
+              <div className="flex flex-wrap gap-2">
+                {categories.map(category => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                      selectedCategory === category.id
+                        ? 'bg-primary text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent hover:border-gray-300'
+                    }`}
+                  >
+                    {category.label}
+                    <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                      selectedCategory === category.id
+                        ? 'bg-white/20 text-white'
+                        : 'bg-white text-gray-500'
+                    }`}>
+                      {category.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Sort & View */}
-            <div className="flex items-center gap-3">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary"
-              >
-                <option value="name">Sort by Name</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
-              </select>
+            {/* Controls Row */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-gray-100">
               
-              <div className="flex border border-gray-200 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white text-gray-600'}`}
+              {/* Price Range */}
+              <div className="flex items-center gap-4 min-w-0 flex-1">
+                <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                  Price: ₹{priceRange[0]} - ₹{priceRange[1]}
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max={Math.max(...products.map(p => p.price)) || 1000}
+                  value={priceRange[1]}
+                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                  className="flex-1 accent-primary"
+                />
+              </div>
+
+              {/* Sort & View Controls */}
+              <div className="flex items-center gap-3">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
-                  <Grid size={18} />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-white text-gray-600'}`}
-                >
-                  <List size={18} />
-                </button>
+                  {sortOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                
+                <div className="hidden sm:flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 transition-colors ${
+                      viewMode === 'grid' ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Grid3X3 size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 transition-colors ${
+                      viewMode === 'list' ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
+
+                {activeFiltersCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="px-4 py-2 text-sm text-primary hover:bg-primary/5 border border-primary rounded-lg transition-colors"
+                  >
+                    Clear ({activeFiltersCount})
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Products Grid */}
-      <section className="py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-gray-600">
-              Showing {filteredProducts.length} products
+      {/* Results Summary */}
+      <section className="bg-gray-50 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold text-gray-900">{filteredProducts.length}</span> products found
+              {searchTerm && (
+                <span> for "<span className="font-medium">{searchTerm}</span>"</span>
+              )}
             </p>
-          </div>
-
-          <div className={viewMode === 'grid' 
-            ? 'grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6'
-            : 'space-y-4'
-          }>
-            {filteredProducts.map((product) => {
-              return viewMode === 'grid' ? (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  cart={cart}
-                  wishlist={wishlist}
-                  onAddToCart={addToCart}
-                  onRemoveFromCart={removeFromCart}
-                  onToggleWishlist={toggleWishlist}
-                />
-              ) : (
-                // List View
-                <div key={product.id} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4">
-                  <div className="flex gap-4">
-                    <img src={product.image} alt={product.name} className="w-24 h-24 object-cover rounded-lg" />
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-start justify-between">
-                        <h3 className="font-semibold text-heading">{product.name}</h3>
-                        <button onClick={() => toggleWishlist(product.id)} className={`p-1 rounded ${wishlist.includes(product.id) ? 'text-red-500' : 'text-gray-400'}`}>
-                          <Heart size={16} className={wishlist.includes(product.id) ? 'fill-current' : ''} />
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} size={12} className={i < Math.floor(product.rating) ? 'text-yellow fill-current' : 'text-gray-300'} />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-500">({product.reviews})</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg font-bold text-primary">{convertPrice(product.price)}</span>
-                          {product.originalPrice && (
-                            <span className="text-sm text-gray-400 line-through">{convertPrice(product.originalPrice)}</span>
-                          )}
-                        </div>
-                        {cart[product.id] === 0 || !cart[product.id] ? (
-                          <button onClick={() => addToCart(product.id)} disabled={product.stock === 0} className={`px-4 py-2 rounded-lg font-medium ${product.stock === 0 ? 'bg-gray-100 text-gray-400' : 'bg-primary text-white hover:bg-primary/90'}`}>
-                            {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                          </button>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <button onClick={() => removeFromCart(product.id)} className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                              <Minus size={14} />
-                            </button>
-                            <span className="font-semibold">{cart[product.id]}</span>
-                            <button onClick={() => addToCart(product.id)} className="w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center">
-                              <Plus size={14} />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
           </div>
         </div>
       </section>
+
+      {/* Products Grid */}
+      <section className="py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {filteredProducts.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Search size={28} className="text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                We couldn't find any products matching your criteria. Try adjusting your filters or search terms.
+              </p>
+              <button
+                onClick={clearFilters}
+                className="bg-primary text-white px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors font-medium"
+              >
+                Clear All Filters
+              </button>
+            </div>
+          ) : (
+            <div className={`grid gap-6 ${
+              viewMode === 'grid' 
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' 
+                : 'grid-cols-1 lg:grid-cols-2'
+            }`}>
+              {filteredProducts.map((dbProduct) => {
+                const product = convertToAdvancedProduct(dbProduct)
+                return (
+                  <AdvancedProductCard
+                    key={dbProduct._id}
+                    product={product}
+                    variant={viewMode === 'list' ? 'horizontal' : 'standard'}
+                    onWishlistToggle={(productId, isWishlisted) => toggleWishlist(productId)}
+                  />
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* No Recommendations section for now */}
 
       <Footer />
     </main>

@@ -1,114 +1,152 @@
 'use client'
 
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState } from 'react'
+import { Star } from 'lucide-react'
 
 const reviews = [
   {
     id: 1,
-    name: 'Sarah Johnson',
-    location: 'New York, NY',
+    name: 'Priya Sharma',
+    location: 'Mumbai, Maharashtra',
     rating: 5,
-    comment: 'The freshest produce I\'ve ever received! The delivery was quick and everything was perfectly packaged. My family loves the organic vegetables.',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+    comment: 'Excellent quality vegetables! Fresh delivery every time. My family is very happy with FreshMart service.'
   },
   {
     id: 2,
-    name: 'Michael Chen',
-    location: 'Los Angeles, CA',
+    name: 'Rajesh Kumar',
+    location: 'Delhi, NCR',
     rating: 5,
-    comment: 'FreshMart has transformed our weekly grocery shopping. The quality is outstanding and the convenience is unmatched. Highly recommended!',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+    comment: 'Best organic fruits in the city. Quick delivery and reasonable prices. Highly recommend to everyone.'
   },
   {
     id: 3,
-    name: 'Emily Rodriguez',
-    location: 'Chicago, IL',
+    name: 'Anita Patel',
+    location: 'Ahmedabad, Gujarat',
+    rating: 4,
+    comment: 'Very good service and fresh produce. The vegetables stay fresh for many days. Great experience overall.'
+  },
+  {
+    id: 4,
+    name: 'Vikram Singh',
+    location: 'Bangalore, Karnataka',
     rating: 5,
-    comment: 'Amazing service! The fruits are always ripe and delicious. I love supporting local farms through FreshMart. Will definitely continue ordering.',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+    comment: 'Amazing quality and packaging. The fruits are always sweet and fresh. Will definitely order again.'
+  },
+  {
+    id: 5,
+    name: 'Meera Reddy',
+    location: 'Hyderabad, Telangana',
+    rating: 4,
+    comment: 'Good variety of organic products. Delivery is always on time. Happy with the overall service quality.'
+  },
+  {
+    id: 6,
+    name: 'Arjun Nair',
+    location: 'Chennai, Tamil Nadu',
+    rating: 5,
+    comment: 'Superb quality vegetables at fair prices. Customer service is excellent. Highly satisfied customer here.'
   }
 ]
 
 export default function CustomerReviews() {
-  const [currentReview, setCurrentReview] = useState(0)
-
-  const nextReview = () => {
-    setCurrentReview((prev) => (prev + 1) % reviews.length)
-  }
-
-  const prevReview = () => {
-    setCurrentReview((prev) => (prev - 1 + reviews.length) % reviews.length)
-  }
-
-  const review = reviews[currentReview]
-
   return (
-    <section className="section-padding bg-accent/20">
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-heading mb-4">
+    <section className="py-12 md:py-16 lg:py-20 bg-accent/20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-heading mb-3 md:mb-4">
             What Our Customers Say
           </h2>
-          <p className="text-body text-lg">
-            Join thousands of satisfied customers who trust FreshMart for their daily produce needs
+          <p className="text-sm md:text-base lg:text-lg text-body">
+            Trusted by thousands of families across India
           </p>
         </div>
 
-        <div className="relative">
-          <div className="card p-8 md:p-12 max-w-3xl mx-auto">
-            {/* Stars */}
-            <div className="flex justify-center mb-6">
-              {[...Array(review.rating)].map((_, i) => (
-                <Star key={i} size={24} className="text-yellow fill-current" />
-              ))}
-            </div>
+        {/* Mobile: Single column */}
+        <div className="grid grid-cols-1 gap-4 md:hidden">
+          {reviews.slice(0, 3).map((review) => (
+            <div key={review.id} className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+              {/* Stars */}
+              <div className="flex mb-3">
+                {[...Array(review.rating)].map((_, i) => (
+                  <Star key={i} size={14} className="text-yellow fill-current" />
+                ))}
+              </div>
 
-            {/* Review Text */}
-            <blockquote className="text-lg md:text-xl text-body italic mb-8 leading-relaxed">
-              "{review.comment}"
-            </blockquote>
+              {/* Review Text */}
+              <p className="text-gray-700 mb-3 text-sm leading-relaxed">
+                "{review.comment}"
+              </p>
 
-            {/* Customer Info */}
-            <div className="flex items-center justify-center space-x-4">
-              <img
-                src={review.avatar}
-                alt={review.name}
-                className="w-16 h-16 rounded-full object-cover"
-              />
-              <div className="text-left">
-                <div className="font-semibold text-heading">{review.name}</div>
-                <div className="text-body">{review.location}</div>
+              {/* Customer Info */}
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-white font-semibold text-xs">{review.name.charAt(0)}</span>
+                </div>
+                <div>
+                  <div className="font-semibold text-heading text-sm">{review.name}</div>
+                  <div className="text-gray-500 text-xs">{review.location}</div>
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* Navigation */}
-          <button
-            onClick={prevReview}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
-          >
-            <ChevronLeft size={20} className="text-primary" />
-          </button>
-          
-          <button
-            onClick={nextReview}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
-          >
-            <ChevronRight size={20} className="text-primary" />
-          </button>
+          ))}
         </div>
 
-        {/* Dots */}
-        <div className="flex justify-center space-x-2 mt-8">
-          {reviews.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentReview(index)}
-              className={`w-3 h-3 rounded-full transition-colors ${
-                index === currentReview ? 'bg-primary' : 'bg-gray-300'
-              }`}
-            />
+        {/* Tablet: 2 columns */}
+        <div className="hidden md:grid lg:hidden grid-cols-2 gap-6">
+          {reviews.slice(0, 4).map((review) => (
+            <div key={review.id} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+              {/* Stars */}
+              <div className="flex mb-4">
+                {[...Array(review.rating)].map((_, i) => (
+                  <Star key={i} size={16} className="text-yellow fill-current" />
+                ))}
+              </div>
+
+              {/* Review Text */}
+              <p className="text-gray-700 mb-4 text-sm leading-relaxed">
+                "{review.comment}"
+              </p>
+
+              {/* Customer Info */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm">{review.name.charAt(0)}</span>
+                </div>
+                <div>
+                  <div className="font-semibold text-heading text-sm">{review.name}</div>
+                  <div className="text-gray-500 text-xs">{review.location}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: 3 columns */}
+        <div className="hidden lg:grid grid-cols-3 gap-6">
+          {reviews.map((review) => (
+            <div key={review.id} className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              {/* Stars */}
+              <div className="flex mb-4">
+                {[...Array(review.rating)].map((_, i) => (
+                  <Star key={i} size={16} className="text-yellow fill-current" />
+                ))}
+              </div>
+
+              {/* Review Text */}
+              <p className="text-gray-700 mb-4 text-sm leading-relaxed">
+                "{review.comment}"
+              </p>
+
+              {/* Customer Info */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm">{review.name.charAt(0)}</span>
+                </div>
+                <div>
+                  <div className="font-semibold text-heading text-sm">{review.name}</div>
+                  <div className="text-gray-500 text-xs">{review.location}</div>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

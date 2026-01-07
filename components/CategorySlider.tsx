@@ -15,22 +15,43 @@ const categories = [
 
 export default function CategorySlider() {
   return (
-    <section className="py-8 bg-white border-b border-gray-100">
+    <section className="py-6 md:py-8 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-2xl font-bold text-heading mb-6">Shop by Category</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-heading mb-4 md:mb-6 text-center md:text-left">Shop by Category</h2>
         
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-6">
+        {/* Mobile: Horizontal scroll */}
+        <div className="md:hidden flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map((category) => (
             <Link key={category.id} href={`/products?category=${category.slug}`}>
-              <div className="flex flex-col items-center cursor-pointer group">
-                <div className="w-16 h-16 rounded-full overflow-hidden mb-3 group-hover:scale-110 transition-transform duration-200 shadow-lg border-2 border-white">
+              <div className="flex flex-col items-center cursor-pointer group flex-shrink-0">
+                <div className="w-14 h-14 rounded-full overflow-hidden mb-2 group-hover:scale-110 transition-transform duration-200 shadow-lg border-2 border-white">
                   <img
                     src={category.image}
                     alt={category.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-                <p className="text-sm font-medium text-center text-heading group-hover:text-primary transition-colors leading-tight">
+                <p className="text-xs font-medium text-center text-heading group-hover:text-primary transition-colors leading-tight w-16">
+                  {category.name}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+        
+        {/* Tablet & Desktop: Grid */}
+        <div className="hidden md:grid grid-cols-4 lg:grid-cols-8 gap-4 lg:gap-6">
+          {categories.map((category) => (
+            <Link key={category.id} href={`/products?category=${category.slug}`}>
+              <div className="flex flex-col items-center cursor-pointer group">
+                <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden mb-3 group-hover:scale-110 transition-transform duration-200 shadow-lg border-2 border-white">
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <p className="text-sm lg:text-base font-medium text-center text-heading group-hover:text-primary transition-colors leading-tight">
                   {category.name}
                 </p>
               </div>

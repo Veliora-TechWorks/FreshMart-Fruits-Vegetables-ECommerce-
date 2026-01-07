@@ -29,52 +29,73 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="section-padding bg-accent/30">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left - Image Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {steps.map((step, index) => (
-              <div key={index} className="relative group">
-                <img
-                  src={step.image}
-                  alt={step.title}
-                  className="w-full h-40 object-cover rounded-2xl shadow-lg group-hover:scale-105 transition-transform"
-                />
-                <div className="absolute inset-0 bg-primary/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="absolute top-4 left-4 bg-white p-2 rounded-full shadow-lg">
-                  <step.icon size={20} className="text-primary" />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Right - Process Steps */}
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-heading mb-4">
+    <section className="py-12 md:py-16 lg:py-20 bg-accent/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          
+          {/* Mobile & Tablet: Content First */}
+          <div className="space-y-6 md:space-y-8 order-1 lg:order-2">
+            <div className="text-center lg:text-left">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-heading mb-3 md:mb-4">
                 How It Works
               </h2>
-              <p className="text-body text-lg">
+              <p className="text-sm md:text-base lg:text-lg text-body">
                 Simple steps to get fresh, organic produce delivered to your home
               </p>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {steps.map((step, index) => (
-                <div key={index} className="flex items-start space-x-4">
+                <div key={index} className="flex items-start space-x-3 md:space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm md:text-base">
                       {index + 1}
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-heading mb-2">
+                    <h3 className="text-lg md:text-xl font-semibold text-heading mb-1 md:mb-2">
                       {step.title}
                     </h3>
-                    <p className="text-body">
+                    <p className="text-sm md:text-base text-body">
                       {step.description}
                     </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Image Grid */}
+          <div className="order-2 lg:order-1">
+            {/* Mobile: Single column */}
+            <div className="grid grid-cols-2 gap-3 md:gap-4 lg:hidden">
+              {steps.slice(0, 4).map((step, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={step.image}
+                    alt={step.title}
+                    className="w-full h-32 md:h-40 object-cover rounded-xl md:rounded-2xl shadow-lg group-hover:scale-105 transition-transform"
+                  />
+                  <div className="absolute inset-0 bg-primary/20 rounded-xl md:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute top-2 md:top-4 left-2 md:left-4 bg-white p-1.5 md:p-2 rounded-full shadow-lg">
+                    <step.icon size={16} className="md:size-5 text-primary" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Desktop: 2x2 Grid */}
+            <div className="hidden lg:grid grid-cols-2 gap-4">
+              {steps.map((step, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={step.image}
+                    alt={step.title}
+                    className="w-full h-40 object-cover rounded-2xl shadow-lg group-hover:scale-105 transition-transform"
+                  />
+                  <div className="absolute inset-0 bg-primary/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute top-4 left-4 bg-white p-2 rounded-full shadow-lg">
+                    <step.icon size={20} className="text-primary" />
                   </div>
                 </div>
               ))}
