@@ -49,40 +49,40 @@ const reviews = [
 
 export default function CustomerReviews() {
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-accent/20">
+    <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-accent/20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-heading mb-3 md:mb-4">
+        <div className="text-center mb-6 sm:mb-8 md:mb-12">
+          <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-heading mb-2 sm:mb-3 md:mb-4">
             What Our Customers Say
           </h2>
-          <p className="text-sm md:text-base lg:text-lg text-body">
+          <p className="text-sm sm:text-base lg:text-lg text-body">
             Trusted by thousands of families across India
           </p>
         </div>
 
         {/* Mobile: Single column */}
-        <div className="grid grid-cols-1 gap-4 md:hidden">
+        <div className="grid grid-cols-1 gap-3 sm:gap-4 md:hidden">
           {reviews.slice(0, 3).map((review) => (
-            <div key={review.id} className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div key={review.id} className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
               {/* Stars */}
-              <div className="flex mb-3">
+              <div className="flex mb-2 sm:mb-3">
                 {[...Array(review.rating)].map((_, i) => (
-                  <Star key={i} size={14} className="text-yellow fill-current" />
+                  <Star key={i} size={12} className="xs:size-[14px] text-yellow fill-current" />
                 ))}
               </div>
 
               {/* Review Text */}
-              <p className="text-gray-700 mb-3 text-sm leading-relaxed">
+              <p className="text-gray-700 mb-2 sm:mb-3 text-xs sm:text-sm leading-relaxed">
                 "{review.comment}"
               </p>
 
               {/* Customer Info */}
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-7 h-7 xs:w-8 xs:h-8 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-xs">{review.name.charAt(0)}</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-heading text-sm">{review.name}</div>
+                  <div className="font-semibold text-heading text-xs sm:text-sm">{review.name}</div>
                   <div className="text-gray-500 text-xs">{review.location}</div>
                 </div>
               </div>
@@ -91,24 +91,24 @@ export default function CustomerReviews() {
         </div>
 
         {/* Tablet: 2 columns */}
-        <div className="hidden md:grid lg:hidden grid-cols-2 gap-6">
+        <div className="hidden md:grid lg:hidden grid-cols-2 gap-4 sm:gap-6">
           {reviews.slice(0, 4).map((review) => (
-            <div key={review.id} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div key={review.id} className="bg-white rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
               {/* Stars */}
-              <div className="flex mb-4">
+              <div className="flex mb-3 sm:mb-4">
                 {[...Array(review.rating)].map((_, i) => (
-                  <Star key={i} size={16} className="text-yellow fill-current" />
+                  <Star key={i} size={14} className="sm:size-4 text-yellow fill-current" />
                 ))}
               </div>
 
               {/* Review Text */}
-              <p className="text-gray-700 mb-4 text-sm leading-relaxed">
+              <p className="text-gray-700 mb-3 sm:mb-4 text-sm leading-relaxed">
                 "{review.comment}"
               </p>
 
               {/* Customer Info */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-sm">{review.name.charAt(0)}</span>
                 </div>
                 <div>

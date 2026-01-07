@@ -15,23 +15,23 @@ const categories = [
 
 export default function CategorySlider() {
   return (
-    <section className="py-6 md:py-8 bg-white border-b border-gray-100">
+    <section className="py-4 sm:py-6 md:py-8 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-xl md:text-2xl font-bold text-heading mb-4 md:mb-6 text-center md:text-left">Shop by Category</h2>
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-heading mb-3 sm:mb-4 md:mb-6 text-center md:text-left">Shop by Category</h2>
         
         {/* Mobile: Horizontal scroll */}
-        <div className="md:hidden flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="md:hidden flex gap-3 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map((category) => (
             <Link key={category.id} href={`/products?category=${category.slug}`}>
               <div className="flex flex-col items-center cursor-pointer group flex-shrink-0">
-                <div className="w-14 h-14 rounded-full overflow-hidden mb-2 group-hover:scale-110 transition-transform duration-200 shadow-lg border-2 border-white">
+                <div className="w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden mb-2 group-hover:scale-110 transition-transform duration-200 shadow-lg border-2 border-white">
                   <img
                     src={category.image}
                     alt={category.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-                <p className="text-xs font-medium text-center text-heading group-hover:text-primary transition-colors leading-tight w-16">
+                <p className="text-xs sm:text-sm font-medium text-center text-heading group-hover:text-primary transition-colors leading-tight w-14 xs:w-16 sm:w-20">
                   {category.name}
                 </p>
               </div>

@@ -57,8 +57,8 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 text-2xl font-bold text-primary hover:text-primary/80 transition-colors">
-            <span>🌿</span>
+          <Link href="/" className="flex items-center space-x-1.5 sm:space-x-2 text-lg sm:text-xl md:text-2xl font-bold text-primary hover:text-primary/80 transition-colors">
+            <span className="text-base sm:text-lg md:text-xl">🌿</span>
             <span>FreshMart</span>
           </Link>
 
@@ -90,13 +90,13 @@ export default function Header() {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
             
             {/* Cart */}
             <Link href="/cart" className="relative p-2 rounded-lg hover:bg-gray-50 transition-colors group">
-              <ShoppingCart size={24} className="text-gray-700 group-hover:text-primary transition-colors" />
+              <ShoppingCart size={20} className="md:size-6 text-gray-700 group-hover:text-primary transition-colors" />
               {getTotalItems() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center font-semibold">
                   {getTotalItems()}
                 </span>
               )}
@@ -224,15 +224,16 @@ export default function Header() {
               <div className="space-y-3 pt-4 border-t border-gray-100">
                 <Link 
                   href="/cart" 
-                  className="relative p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group w-full flex items-center justify-center"
+                  className="relative p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group w-full flex items-center justify-center"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <ShoppingCart size={24} className="text-gray-700 group-hover:text-primary transition-colors" />
                   {getTotalItems() > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+                    <span className="absolute top-2 right-2 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
                       {getTotalItems()}
                     </span>
                   )}
+                  <span className="ml-3 text-gray-700 group-hover:text-primary font-medium">Cart ({getTotalItems()})</span>
                 </Link>
                 
                 {isLoggedIn ? (
@@ -288,10 +289,10 @@ export default function Header() {
                 ) : (
                   <Link 
                     href="/auth/login" 
-                    className="bg-gray-900 text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors w-full flex items-center justify-center space-x-2"
+                    className="bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors w-full flex items-center justify-center space-x-2 text-base"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <User size={16} />
+                    <User size={18} />
                     <span>Sign In</span>
                   </Link>
                 )}

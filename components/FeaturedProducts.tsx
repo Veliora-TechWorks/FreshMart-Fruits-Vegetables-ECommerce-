@@ -115,21 +115,21 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <section id="products" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section id="products" className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-center mb-12 md:mb-16 xl:mb-20">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-2 md:px-4 xl:px-5 xl:py-3 rounded-full text-xs md:text-sm xl:text-base font-medium mb-3 md:mb-4 xl:mb-6">
-            <Sparkles size={14} className="md:size-4 xl:size-5" />
+        <div className="text-center mb-8 sm:mb-12 md:mb-16 xl:mb-20">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-2 sm:px-4 md:px-5 xl:py-3 rounded-full text-xs sm:text-sm xl:text-base font-medium mb-3 md:mb-4 xl:mb-6">
+            <Sparkles size={12} className="sm:size-[14px] md:size-4 xl:size-5" />
             <span>Premium Quality</span>
           </div>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-gray-900 mb-4 md:mb-6 xl:mb-8 px-4">
+          <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-gray-900 mb-3 sm:mb-4 md:mb-6 xl:mb-8 px-2 sm:px-4">
             Featured Products
           </h2>
-          <p className="text-base md:text-xl xl:text-2xl text-gray-600 max-w-3xl xl:max-w-4xl mx-auto leading-relaxed px-4">
+          <p className="text-sm sm:text-base md:text-xl xl:text-2xl text-gray-600 max-w-2xl sm:max-w-3xl xl:max-w-4xl mx-auto leading-relaxed px-2 sm:px-4">
             Discover our handpicked selection of the freshest, highest-quality organic produce 
-            <span className="hidden md:inline">sourced directly from trusted local farms</span>
+            <span className="hidden sm:inline">sourced directly from trusted local farms</span>
           </p>
         </div>
 
@@ -141,14 +141,14 @@ export default function FeaturedProducts() {
         ) : (
           <>
             {/* Category Filter */}
-            <div className="px-4 mb-8 md:mb-12 xl:mb-16">
+            <div className="px-2 sm:px-4 mb-6 sm:mb-8 md:mb-12 xl:mb-16">
               {/* Mobile: Horizontal scroll */}
               <div className="md:hidden flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 {categories.map((category) => (
                   <button
                     key={category.id}
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    className={`flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 min-h-[36px] sm:min-h-[40px] ${
                       activeCategory === category.id
                         ? 'bg-primary text-white shadow-lg'
                         : 'bg-white text-gray-700 border border-gray-200'
@@ -172,7 +172,7 @@ export default function FeaturedProducts() {
                   <button
                     key={category.id}
                     onClick={() => setActiveCategory(category.id)}
-                    className={`px-6 py-3 xl:px-8 xl:py-4 xl:text-lg rounded-full font-medium transition-all duration-200 ${
+                    className={`px-4 py-2.5 md:px-6 md:py-3 xl:px-8 xl:py-4 text-sm md:text-base xl:text-lg rounded-full font-medium transition-all duration-200 min-h-[44px] ${
                       activeCategory === category.id
                         ? 'bg-primary text-white shadow-lg transform scale-105'
                         : 'bg-white text-gray-700 border border-gray-200 hover:border-primary hover:text-primary hover:shadow-md'
@@ -192,7 +192,7 @@ export default function FeaturedProducts() {
             </div>
 
             {/* Products Grid */}
-            <div className="px-4">
+            <div className="px-2 sm:px-4">
               {/* Mobile: 1 column */}
               <div className="grid grid-cols-1 gap-4 sm:hidden">
                 {filteredProducts.slice(0, 4).map((dbProduct, index) => {
@@ -200,7 +200,7 @@ export default function FeaturedProducts() {
                   return (
                     <div 
                       key={dbProduct._id}
-                      className="transform hover:scale-105 transition-transform duration-200"
+                      className="transform hover:scale-[1.02] transition-transform duration-200"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <AdvancedProductCard
@@ -213,14 +213,14 @@ export default function FeaturedProducts() {
                 })}
               </div>
               
-              {/* Tablet: 2 columns */}
-              <div className="hidden sm:grid md:hidden grid-cols-2 gap-6">
+              {/* Small Mobile & Tablet: 2 columns */}
+              <div className="hidden sm:grid md:hidden grid-cols-2 gap-4 sm:gap-6">
                 {filteredProducts.slice(0, 6).map((dbProduct, index) => {
                   const product = convertToAdvancedProduct(dbProduct)
                   return (
                     <div 
                       key={dbProduct._id}
-                      className="transform hover:scale-105 transition-transform duration-200"
+                      className="transform hover:scale-[1.02] transition-transform duration-200"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <AdvancedProductCard
@@ -234,13 +234,13 @@ export default function FeaturedProducts() {
               </div>
               
               {/* Desktop & Laptop: 3-4 columns */}
-              <div className="hidden md:grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:grid-cols-2 gap-6 xl:gap-8">
+              <div className="hidden md:grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:grid-cols-2 gap-4 md:gap-6 xl:gap-8">
                 {filteredProducts.map((dbProduct, index) => {
                   const product = convertToAdvancedProduct(dbProduct)
                   return (
                     <div 
                       key={dbProduct._id}
-                      className="transform hover:scale-105 transition-transform duration-200"
+                      className="transform hover:scale-[1.02] transition-transform duration-200"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <AdvancedProductCard
@@ -255,21 +255,21 @@ export default function FeaturedProducts() {
             </div>
 
             {/* Call to Action */}
-            <div className="mt-12 md:mt-16 xl:mt-20 px-4">
-              <div className="bg-white rounded-xl md:rounded-2xl xl:rounded-3xl shadow-lg md:shadow-xl p-6 md:p-8 xl:p-12 max-w-2xl xl:max-w-4xl mx-auto border border-gray-100">
-                <h3 className="text-xl md:text-2xl xl:text-3xl font-bold text-gray-900 mb-3 md:mb-4 xl:mb-6">
+            <div className="mt-8 sm:mt-12 md:mt-16 xl:mt-20 px-2 sm:px-4">
+              <div className="bg-white rounded-xl md:rounded-2xl xl:rounded-3xl shadow-lg md:shadow-xl p-4 sm:p-6 md:p-8 xl:p-12 max-w-xl sm:max-w-2xl xl:max-w-4xl mx-auto border border-gray-100">
+                <h3 className="text-lg sm:text-xl md:text-2xl xl:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4 xl:mb-6">
                   Explore Our Full Collection
                 </h3>
-                <p className="text-sm md:text-base xl:text-lg text-gray-600 mb-4 md:mb-6 xl:mb-8">
+                <p className="text-sm sm:text-base xl:text-lg text-gray-600 mb-4 sm:mb-6 xl:mb-8">
                   Browse through our complete range of fresh, organic produce
-                  <span className="hidden md:inline"> and discover seasonal specialties handpicked just for you</span>.
+                  <span className="hidden sm:inline"> and discover seasonal specialties handpicked just for you</span>.
                 </p>
                 <Link 
                   href="/products" 
-                  className="inline-flex items-center gap-2 bg-primary text-white px-6 md:px-8 xl:px-10 py-3 md:py-4 xl:py-5 xl:text-lg rounded-full font-semibold hover:bg-primary/90 transition-colors group w-full md:w-auto justify-center"
+                  className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 sm:px-8 sm:py-4 xl:px-10 xl:py-5 text-sm sm:text-base xl:text-lg rounded-full font-semibold hover:bg-primary/90 transition-colors group w-full sm:w-auto justify-center min-h-[44px]"
                 >
                   <span>View All Products</span>
-                  <ArrowRight size={18} className="md:size-5 xl:size-6 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={16} className="sm:size-[18px] md:size-5 xl:size-6 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>

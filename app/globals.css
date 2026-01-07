@@ -11,6 +11,8 @@
   
   html {
     scroll-behavior: smooth;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
   }
   
   body {
@@ -18,21 +20,44 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Prevent horizontal scroll */
+    overflow-x: hidden;
+    /* Improve touch scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
   }
   
   img {
     max-width: 100%;
     height: auto;
   }
+  
+  /* Improve button and link touch targets on mobile */
+  @media (max-width: 768px) {
+    button, a {
+      min-height: 44px;
+    }
+  }
+  
+  /* Prevent zoom on input focus on iOS */
+  @media screen and (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-primary/90 transition-colors;
+    @apply bg-primary text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-full font-medium hover:bg-primary/90 transition-colors text-sm sm:text-base;
   }
   
   .btn-secondary {
-    @apply bg-white text-primary border-2 border-primary px-6 py-3 rounded-full font-medium hover:bg-primary hover:text-white transition-colors;
+    @apply bg-white text-primary border-2 border-primary px-4 py-2.5 sm:px-6 sm:py-3 rounded-full font-medium hover:bg-primary hover:text-white transition-colors text-sm sm:text-base;
   }
   
   .card {
@@ -74,5 +99,46 @@
   
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Mobile-first touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Responsive text sizing */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .text-responsive-base {
+    @apply text-sm sm:text-base md:text-lg;
+  }
+  
+  .text-responsive-lg {
+    @apply text-base sm:text-lg md:text-xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+  
+  /* Mobile-optimized spacing */
+  .space-mobile {
+    @apply space-y-3 sm:space-y-4 md:space-y-6;
+  }
+  
+  .gap-mobile {
+    @apply gap-3 sm:gap-4 md:gap-6;
+  }
+  
+  /* Safe area padding for mobile devices */
+  .safe-padding {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }
