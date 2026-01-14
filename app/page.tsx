@@ -7,6 +7,8 @@ import About from '@/components/About'
 import CustomerReviews from '@/components/CustomerReviews'
 import Footer from '@/components/Footer'
 
+export const revalidate = 60;
+
 export default function Home() {
   return (
     <main className="min-h-screen">

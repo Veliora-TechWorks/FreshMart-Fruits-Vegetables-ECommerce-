@@ -2,11 +2,29 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Product from '@/models/Product';
 
-export async function GET() {
+export const revalidate = 60;
+
+export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    const products = await Product.find({}).sort({ createdAt: -1 });
-    return NextResponse.json(products);
+    
+    const { searchParams } = new URL(request.url);
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const page = parseInt(searchParams.get('page') || '1');
+    const skip = (page - 1) * limit;
+    
+    const products = await Product.find({})
+      .select('-reviews -nutritionInfo')
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
+      .lean();
+    
+    return NextResponse.json(products, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120'
+      }
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
   }

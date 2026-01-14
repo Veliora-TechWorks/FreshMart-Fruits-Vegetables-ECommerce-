@@ -202,6 +202,15 @@ export default function ProductsPage() {
           onSuccess={fetchProducts}
         />
       )}
+
+      {/* Edit Product Modal */}
+      {selectedProduct && (
+        <SimpleProductForm 
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onSuccess={fetchProducts}
+        />
+      )}
     </div>
   )
 }

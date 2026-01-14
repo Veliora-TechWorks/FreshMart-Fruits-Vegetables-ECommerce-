@@ -4,26 +4,27 @@ import { useState } from 'react'
 import { Upload, X, Plus, Trash2, Star } from 'lucide-react'
 
 interface ProductFormProps {
+  product?: any
   onClose: () => void
   onSuccess: () => void
 }
 
-export default function SimpleProductForm({ onClose, onSuccess }: ProductFormProps) {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [price, setPrice] = useState('')
-  const [originalPrice, setOriginalPrice] = useState('')
-  const [stock, setStock] = useState('')
-  const [category, setCategory] = useState('fruits')
-  const [unit, setUnit] = useState('kg')
-  const [organic, setOrganic] = useState(false)
-  const [featured, setFeatured] = useState(false)
-  const [rating, setRating] = useState('')
+export default function SimpleProductForm({ product, onClose, onSuccess }: ProductFormProps) {
+  const [name, setName] = useState(product?.name || '')
+  const [description, setDescription] = useState(product?.description || '')
+  const [price, setPrice] = useState(product?.price?.toString() || '')
+  const [originalPrice, setOriginalPrice] = useState(product?.originalPrice?.toString() || '')
+  const [stock, setStock] = useState(product?.stock?.toString() || '')
+  const [category, setCategory] = useState(product?.category || 'fruits')
+  const [unit, setUnit] = useState(product?.unit || 'kg')
+  const [organic, setOrganic] = useState(product?.organic || false)
+  const [featured, setFeatured] = useState(product?.featured || false)
+  const [rating, setRating] = useState(product?.rating?.toString() || '')
   const [reviews, setReviews] = useState('')
-  const [brand, setBrand] = useState('')
-  const [deliveryTime, setDeliveryTime] = useState('')
-  const [offerText, setOfferText] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
+  const [brand, setBrand] = useState(product?.brand || '')
+  const [deliveryTime, setDeliveryTime] = useState(product?.deliveryTime || '')
+  const [offerText, setOfferText] = useState(product?.offerText || '')
+  const [imageUrl, setImageUrl] = useState(product?.images?.[0]?.url || '')
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [isFresh, setIsFresh] = useState(true)
@@ -153,14 +154,14 @@ export default function SimpleProductForm({ onClose, onSuccess }: ProductFormPro
 
       console.log('Submitting product:', productData)
 
-      const response = await fetch('/api/products', {
-        method: 'POST',
+      const response = await fetch(product ? `/api/products/${product._id}` : '/api/products', {
+        method: product ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productData)
       })
 
       if (response.ok) {
-        alert('Product added successfully!')
+        alert(product ? 'Product updated successfully!' : 'Product added successfully!')
         onSuccess()
         onClose()
       } else {
@@ -181,7 +182,7 @@ export default function SimpleProductForm({ onClose, onSuccess }: ProductFormPro
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-900">Add New Product</h3>
+            <h3 className="text-2xl font-bold text-gray-900">{product ? 'Edit Product' : 'Add New Product'}</h3>
             <button 
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -513,7 +514,7 @@ export default function SimpleProductForm({ onClose, onSuccess }: ProductFormPro
                 disabled={uploading || submitting}
                 className="flex-1 bg-green-600 text-white py-3 px-6 rounded-xl hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium text-lg"
               >
-                {submitting ? 'Adding Product...' : 'Add Product'}
+                {submitting ? (product ? 'Updating...' : 'Adding...') : (product ? 'Update Product' : 'Add Product')}
               </button>
               <button
                 type="button"
